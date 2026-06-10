@@ -9,7 +9,7 @@
 #include "hardware/watchdog.h"
 #include "hardware/rtc.h"
 #include "pico/util/datetime.h"
-
+#include <math.h>
 #include "UI.h"
 #include "minmea.h"
 #include "hardware/uart.h"
@@ -156,7 +156,7 @@ int main()
     while (true)
     {
         gpio_put(10, 1);
-        DrawThickRect(1, 1, 126, 158, 4, ST7735_BLUE);
+        //DrawThickRect(1, 1, 126, 158, 4, ST7735_BLUE);
 
         char line[160];
 
@@ -182,19 +182,26 @@ int main()
                 char buffer[32];
                 snprintf(buffer, sizeof(buffer), "Sats: %02d", sats);
                 drawText(5, 110, buffer, ST7735_WHITE, ST7735_BLACK, 1);
+                
             }
         }
 
-        // Always display time from RTC (accurate before and after dormant)
+        // Always display time from RTC 
         {
             int h, m, s;
             if (timekeeping_get(&h, &m, &s))
             {
                 char buffer[32];
                 // '~' = free-running, not yet GPS-locked
-                snprintf(buffer, sizeof(buffer), "%s%02d:%02d:%02d",
-                         g_time_valid ? "" : "~", h+2, m, s);
-                drawText(15, 70, buffer, ST7735_WHITE, ST7735_BLACK, 2);
+                snprintf(buffer, sizeof(buffer), "%s%02d:%02d",
+                         g_time_valid ? "" : "~", h+2, m);
+                drawText(30, 70, buffer, ST7735_WHITE, ST7735_BLACK, 2);
+                float cpercent = (float)s / 60.0f;
+                /*if(s == 0){
+                    DrawCirclePartial(64,80,60,4,1,ST7735_BLACK);
+                }
+                DrawCirclePartial(64,80,60,4,cpercent,ST7735_BLUE);
+                DrawCirclePartial(64,80,54,4,0.8,ST7735_GREEN);*/
             }
         }
 
@@ -223,7 +230,7 @@ int main()
         {
             fillScreen(ST7735_BLACK);
             fillRect(123, 0, 5, 10, ST7735_RED);
-            for (uint16_t i = 1000; i != 0; i--)
+            for (uint16_t i = 100; i != 0; i--)
             {
                 char buffer[16];
                 snprintf(buffer, sizeof(buffer), "%d", i);

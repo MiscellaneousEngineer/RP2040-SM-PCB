@@ -9,3 +9,14 @@ void DrawThickRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t wall
     drawRectWH(x + i, y + i, w - i * 2, h - i * 2, color);
   }
 }
+void DrawCirclePartial(uint16_t cx, uint16_t cy, uint16_t r, uint16_t thc, float_t percentdec, uint16_t color) {
+  #define PI 3.14159265358979323846
+  float step =  (2*PI)/(2*PI*r);
+  for(double t = 0; t <= (2 * PI)*percentdec; t += step){
+    for(int i = 0; i <= thc; i +=1){
+        double x = (r+i) * cos(t);
+        double y = (r+i) * sin(t);
+        drawPixel(x+cx,y+cy,color);
+    }
+  }
+}
