@@ -78,9 +78,28 @@ void init_hw()
 void dormant(uint16_t WAKEPIN)
 {
     gpio_put(10, 0);
+
     sleep_ms(1000);
-    gpio_set_dormant_irq_enabled(WAKEPIN, GPIO_IRQ_EDGE_RISE, true);
+
+    gpio_acknowledge_irq(WAKEPIN, GPIO_IRQ_EDGE_RISE);
+
+    gpio_set_dormant_irq_enabled(
+        WAKEPIN,
+        GPIO_IRQ_EDGE_RISE,
+        true
+    );
+
     xosc_dormant();
+
+    // execution resumes here after wake
+
+    //gpio_acknowledge_irq(WAKEPIN, GPIO_IRQ_EDGE_RISE);
+
+  /*  gpio_set_dormant_irq_enabled(
+        WAKEPIN,
+        GPIO_IRQ_EDGE_RISE,
+        false
+    );*/
 }
 
 bool read_nmea_line(char *buf, size_t max_len)
@@ -136,6 +155,7 @@ int main()
 {
     gpio_init(S2);
     gpio_set_dir(S2, GPIO_IN);
+    gpio_pull_down(S2);
     gpio_init(S4);
     gpio_set_dir(S4, GPIO_IN);
 
@@ -146,6 +166,7 @@ int main()
     TFT_GreenTab_Initialize();
     gpio_init(10);
     gpio_set_dir(10, 1);
+    gpio_pull_down(10);
     gpio_put(10, 1);
     fillScreen(ST7735_BLACK);
 
@@ -181,7 +202,7 @@ int main()
             {
                 char buffer[32];
                 snprintf(buffer, sizeof(buffer), "Sats: %02d", sats);
-                drawText(5, 110, buffer, ST7735_WHITE, ST7735_BLACK, 1);
+                drawText(35, 90, buffer, ST7735_WHITE, ST7735_BLACK, 1);
                 
             }
         }
@@ -195,13 +216,13 @@ int main()
                 // '~' = free-running, not yet GPS-locked
                 snprintf(buffer, sizeof(buffer), "%s%02d:%02d",
                          g_time_valid ? "" : "~", h+2, m);
-                drawText(30, 70, buffer, ST7735_WHITE, ST7735_BLACK, 2);
+                drawText(35, 73, buffer, ST7735_WHITE, ST7735_BLACK, 2);
                 float cpercent = (float)s / 60.0f;
-                /*if(s == 0){
+                if(s == 0){
                     DrawCirclePartial(64,80,60,4,1,ST7735_BLACK);
                 }
                 DrawCirclePartial(64,80,60,4,cpercent,ST7735_BLUE);
-                DrawCirclePartial(64,80,54,4,0.8,ST7735_GREEN);*/
+                //DrawCirclePartial(64,80,54,4,0.8,ST7735_GREEN);
             }
         }
 
@@ -219,8 +240,6 @@ int main()
             }
             if (gpio_get(S2))
             {
-                gpio_put(10, 0);
-                sleep_ms(200);
                 fillScreen(ST7735_BLACK);
                 dormant(S2); 
             }
