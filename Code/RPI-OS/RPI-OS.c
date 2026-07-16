@@ -1,3 +1,5 @@
+//This entire superloop is being refactored into a proper OS. Currently broken
+
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "ST7735_TFT.h"
@@ -10,19 +12,10 @@
 #include "hardware/rtc.h"
 #include "pico/util/datetime.h"
 #include <math.h>
-#include "UI.h"
+#include "ui/widgets.h"
 #include "minmea.h"
 #include "hardware/uart.h"
-
-#define S2 6
-#define S3 20
-#define S4 7
-#define S5 21
-
-#define GPS_UART uart0
-#define BAUD_RATE 9600
-#define UART_TX_PIN 0
-#define UART_RX_PIN 1
+#include "hal/board.h"
 
 // ── Timekeeping ───────────────────────────────────────────────────────────────
 static bool g_time_valid = false;
@@ -197,11 +190,12 @@ int main()
                          g_time_valid ? "" : "~", h+2, m);
                 drawText(30, 70, buffer, ST7735_WHITE, ST7735_BLACK, 2);
                 float cpercent = (float)s / 60.0f;
-                /*if(s == 0){
-                    DrawCirclePartial(64,80,60,4,1,ST7735_BLACK);
+                if(s == 0){
+                    DrawCirclePartial(64,80,60,4,1,ST7735_BLUE);
                 }
+                
                 DrawCirclePartial(64,80,60,4,cpercent,ST7735_BLUE);
-                DrawCirclePartial(64,80,54,4,0.8,ST7735_GREEN);*/
+                //DrawCirclePartial(64,80,54,4,0.8,ST7735_GREEN);
             }
         }
 
