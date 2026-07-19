@@ -69,7 +69,15 @@ endif()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(RPI-OS RPI-OS.c minmea.c)
+add_executable(RPI-OS 
+    RPI-OS.c
+    minmea.c
+    drivers/ioman.c drivers/ubx.c
+    hal/hw.c    hal/pwr.c
+    kernel/kernel.c kernel/evetq.c  kernel/ktimer.c
+    src/main.c
+    ui/ui.c ui/widgets.c
+    )
 
 pico_set_program_name(RPI-OS "RPI-OS")
 pico_set_program_version(RPI-OS "0.1")
@@ -87,8 +95,8 @@ target_compile_definitions(RPI-OS PRIVATE
 
 # Add the standard library to the build
 target_link_libraries(RPI-OS
-        pico_stdlib
-        hardware_spi
+        pico_stdlib     pico_multicore
+        hardware_spi    hardware_dma
         st7735
         hardware_rtc 
 )
@@ -97,6 +105,11 @@ target_link_libraries(RPI-OS
 # Add the standard include files to the build
 target_include_directories(RPI-OS PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/drivers
+        ${CMAKE_CURRENT_LIST_DIR}/hal
+        ${CMAKE_CURRENT_LIST_DIR}/kernel
+        ${CMAKE_CURRENT_LIST_DIR}/src
+        ${CMAKE_CURRENT_LIST_DIR}/ui
 )
 
 pico_add_extra_outputs(RPI-OS)

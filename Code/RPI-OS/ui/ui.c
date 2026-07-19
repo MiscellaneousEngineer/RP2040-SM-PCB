@@ -1,0 +1,2 @@
+//this handles the framebuffer ram area - as graphical functions write to the frambuffer, it gets flagged as dirty and gets rendered the next relevant cycle
+//apps write to the frambuffer as they excecute

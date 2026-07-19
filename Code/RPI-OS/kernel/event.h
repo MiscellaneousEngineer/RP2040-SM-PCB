@@ -11,7 +11,8 @@ typedef enum {
     EVT_RESTART,
     EVT_REDRAW,
     EVT_LOW_BATT,
-    EVT_COUNT
+    EVT_COUNT,
+    EVT_DEBOUNCE
 
 }   evt_type_t;
 
