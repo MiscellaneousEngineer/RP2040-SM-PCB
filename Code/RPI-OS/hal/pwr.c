@@ -1,5 +1,5 @@
 #include "pwr.h"
-#include "hw.c"
+#pragma once
 
 typedef struct
 {
